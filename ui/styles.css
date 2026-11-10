@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@layer base {
+  body { margin: 0; background: #f6f5f0; color: #272f2b; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+  button, a, input { -webkit-tap-highlight-color: transparent; }
+  button { cursor: pointer; }
+  button:disabled { cursor: wait; }
+  :focus-visible { outline: 3px solid #c18a2c; outline-offset: 4px; }
+}
+
+@layer components {
+  .page-shell { @apply mx-auto w-full max-w-6xl px-5 sm:px-8; }
+  .brand-mark { @apply grid h-9 w-9 grid-cols-2 gap-1 rounded-xl bg-emerald-900 p-2; }
+  .brand-mark i { @apply rounded-[1px] bg-lime-200; }
+  .hero { @apply flex items-end justify-between gap-6 border-y border-stone-300 py-10 sm:py-12; }
+  .eyebrow { @apply text-[10px] font-semibold uppercase tracking-[0.18em]; }
+  .step-number { @apply flex h-6 w-6 items-center justify-center rounded-full border border-stone-300 text-[10px] font-semibold text-stone-500; }
+  .room-card { @apply relative rounded-2xl border-2 border-transparent p-5 text-left transition hover:-translate-y-0.5; }
+  .room-0 { background: #e6ecdd; --furniture: #71866a; }
+  .room-1 { background: #f0e7da; --furniture: #b59a79; }
+  .room-2 { background: #e3e9ec; --furniture: #809aa5; }
+  .room-card.selected { @apply border-emerald-800; }
+  .selection-dot { @apply flex h-5 w-5 items-center justify-center rounded-full border border-stone-400 text-[11px]; }
+  .selected .selection-dot { @apply border-emerald-800 bg-emerald-800 text-white; }
+  .room-sketch { @apply mx-auto my-4 w-36; }
+  .chair-row { @apply flex justify-evenly px-2; }
+  .chair-row span { background: var(--furniture); @apply h-2.5 w-5 rounded-t-md opacity-60; }
+  .chair-row.bottom span { @apply rounded-t-none rounded-b-md; }
+  .meeting-table { border-color: var(--furniture); @apply my-1 flex h-12 items-center justify-center gap-4 rounded-2xl border-2 bg-white/45; }
+  .meeting-table span { border-color: var(--furniture); @apply h-4 w-3 -rotate-12 rounded-xs border bg-white/50; }
+  .meeting-table span + span { @apply rotate-12; }
+  .schedule-panel { @apply rounded-2xl border border-stone-200 bg-white/60 p-5 sm:p-6; }
+  .date-input { @apply rounded-lg border border-stone-300 bg-white px-3 py-2; }
+  .date-button { @apply rounded-lg border border-stone-200 bg-white px-3 py-2 text-xs hover:bg-stone-100; }
+  .empty-schedule { @apply flex min-h-52 flex-col items-center justify-center rounded-xl border border-dashed border-stone-300 px-4 py-8 text-center; }
+  .booking-panel { background: #22594d; @apply rounded-2xl p-6 text-white; }
+  .field-label { @apply flex flex-col gap-2 text-xs font-medium text-white/85; }
+  .field-label input { @apply min-w-0 w-full rounded-lg border border-white/25 bg-white/10 px-3 py-3 text-sm text-white placeholder:text-white/45; color-scheme: dark; }
+  .book-button { background: #e2eeae; @apply flex w-full items-center justify-between rounded-lg px-4 py-3.5 text-sm font-semibold text-emerald-950 transition hover:brightness-105; }
+  .error-banner { @apply rounded-xl bg-red-50 p-4 text-sm text-red-800; }
+}

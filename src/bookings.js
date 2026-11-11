@@ -4,6 +4,10 @@ export class ValidationError extends Error {
   status = 400;
 }
 
+export class ConflictError extends Error {
+  status = 409;
+}
+
 function requireRoom(store, roomId) {
   if (!store.rooms.some((room) => room.id === roomId)) {
     throw new ValidationError('Choose an existing room.');
@@ -20,6 +24,27 @@ function parseTimestamp(value) {
     throw new ValidationError('Enter a valid date and time.');
   }
   return date.toISOString();
+}
+
+function formatHHMM(isoTimestamp) {
+  return isoTimestamp.slice(11, 16);
+}
+
+// Half-open [start, end) overlap test, scoped to roomId, mirroring listBookings'
+// filter+sort idiom. Earliest-starting match wins so the result is deterministic
+// even when a wide request straddles two non-overlapping existing bookings.
+function findOverlappingBooking(store, roomId, startTime, endTime) {
+  return store.bookings
+    .filter((booking) => booking.roomId === roomId && booking.startTime < endTime && booking.endTime > startTime)
+    .sort((a, b) => a.startTime.localeCompare(b.startTime))[0] ?? null;
+}
+
+function buildConflictMessage(room, conflictingBooking, requestedStart, requestedEnd) {
+  const conflictStart = conflictingBooking.startTime > requestedStart ? conflictingBooking.startTime : requestedStart;
+  const conflictEnd = conflictingBooking.endTime < requestedEnd ? conflictingBooking.endTime : requestedEnd;
+  return `Room ${room.name} is already booked from ${formatHHMM(conflictingBooking.startTime)} `
+    + `to ${formatHHMM(conflictingBooking.endTime)}, resulting in a conflict from `
+    + `${formatHHMM(conflictStart)} to ${formatHHMM(conflictEnd)}.`;
 }
 
 export function listBookings(store, roomId, date) {
@@ -48,6 +73,11 @@ export function createBooking(store, input) {
   const endTime = parseTimestamp(input.endTime);
   if (startTime >= endTime) {
     throw new ValidationError('End time must be after start time.');
+  }
+  const room = store.rooms.find((candidate) => candidate.id === input.roomId);
+  const conflict = findOverlappingBooking(store, input.roomId, startTime, endTime);
+  if (conflict) {
+    throw new ConflictError(buildConflictMessage(room, conflict, startTime, endTime));
   }
   const booking = {
     id: randomUUID(),
